@@ -17,4 +17,5 @@ class Message(models.Model):
 
     def save(self, *args, **kwargs):
         super(Message, self).save(*args, **kwargs)
-        transaction.on_commit(lambda: celery_task.delay(self.id))
+        if self.delivered_flag is False:
+            transaction.on_commit(lambda: celery_task.delay(self.id))
